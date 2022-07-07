@@ -37,7 +37,8 @@ function isWin() {
                 found = 0;
             }
         }
-        if(found == 1) return currentPlayer;
+        if(found == 1) {
+            return currentPlayer;}
     }
     if(found == 0) return false;
 }
@@ -97,15 +98,16 @@ function resetGame() {
         cell.classList.remove("playerX");
         cell.classList.remove("playerO");
         cell.innerText = '';
-        player1.moves = [0, 0, 0, 0, 0, 0, 0, 0, 0];
-        player2.moves = [0, 0, 0, 0, 0, 0, 0, 0, 0];
-        currentPlayer = 1;
-        winnerMessage.innerHTML = `&nbsp`;
     })
+    player1.moves = [0, 0, 0, 0, 0, 0, 0, 0, 0];
+    player2.moves = [0, 0, 0, 0, 0, 0, 0, 0, 0];
+    currentPlayer = 1;
+    winnerMessage.innerHTML = `&nbsp`;
 }
 resetButton.addEventListener("click", () => {
     resetGame();
-    pvp();
+    if(toggleGame == 1) pvp();
+    else if(toggleGame == 3) pvai();
 })
 
 
@@ -113,10 +115,13 @@ resetButton.addEventListener("click", () => {
 function pvp() {
     toggleWin = 0;
     toggleGame = 1;
+    signChoice.classList.add("hide");
     pvpButton.classList.add("clickedButton");
+    pvaiButton.classList.remove("clickedButton");
+    resetGame();
     cells.forEach(cell => {
     cell.addEventListener("click", () => {
-        if(toggleWin == 0 && player1.moves[cell.id] == 0 && player2.moves[cell.id] == 0) {
+        if(toggleWin == 0 && player1.moves[cell.id] == 0 && player2.moves[cell.id] == 0 && toggleGame == 1) {
             fillCell(cell);
             updatePlayer(cell);
             checkWin();
@@ -126,15 +131,90 @@ function pvp() {
 })
 }
 
+
+
+
+const signChoice = document.getElementById("signChoice");
+let playerSignChoice = "X";
+let AISignChoice = "O";
+signChoice.addEventListener("change", () => {
+    playerSignChoice = signChoice.options[signChoice.selectedIndex].value;
+    resetGame();
+    if(playerSignChoice == "X") {
+        AISignChoice = "O";
+        currentPlayer = 1;
+    } else if(playerSignChoice == "O") {
+        AISignChoice = "X";
+        currentPlayer = -1;
+    }
+})
+
+
+
+let indexAI = [];
+function fillAI() {
+    indexAI = [];
+    let a = 0;
+    for(let i = 0; i < 9; i++) {
+        if(player1.moves[i] == 0 && player2.moves[i] == 0) {
+            indexAI[a] = i;
+            a++;
+        }
+    }
+    let pickCell = indexAI[Math.floor(Math.random() * indexAI.length)];
+    player2.moves[pickCell] = 1;
+    cells.forEach(cell => {
+        if(cell.id == pickCell) {
+            cell.classList.add(`player${AISignChoice}`);
+            cell.innerHTML = `<p style='font-size: 70px; margin: 0; padding: 0;'>${AISignChoice}</p>`;
+        }
+    }) 
+    checkWin();
+    currentPlayer = -currentPlayer;
+}
+
+function pvai() {
+    toggleWin = 0;
+    toggleGame = 3;
+    signChoice.classList.remove("hide");
+    pvaiButton.classList.add("clickedButton");
+    pvpButton.classList.remove("clickedButton");
+    resetGame();
+    cells.forEach(cell => {
+        cell.addEventListener("click", () => {
+            if(toggleWin == 0 && player1.moves[cell.id] == 0 && player2.moves[cell.id] == 0 && toggleGame == 3) {
+                fillCell(cell);
+                updatePlayer(cell);
+                checkWin();
+                if(toggleWin == 0) {
+                fillAI();
+                currentPlayer = -currentPlayer;
+                }
+            }
+        })
+    })
+}
+
 toggleGame = 0;
+
 const pvpButton = document.getElementById("pvp");
+pvpButton.classList.add("clickedButton");
 pvpButton.addEventListener("click", () => {
+    if(toggleGame == 1) return;
+    toggleGame = 0;
     if(toggleGame == 0) {
         pvp();
     }
 })
 
-
+const pvaiButton = document.getElementById("pvai");
+pvaiButton.addEventListener("click", () => {
+    if(toggleGame == 3) return;
+    toggleGame = 2;
+    if(toggleGame == 2) {
+        pvai();
+    }
+})
 
 pvp();
 
