@@ -42,16 +42,39 @@ function isWin() {
     if(found == 0) return false;
 }
 
+function checkDraw() {
+    let isDraw = 1;
+    for(let i = 0; i < 9; i++) {
+        if(player1.moves[i] == 0 && player2.moves[i] == 0) {
+            isDraw = 0;
+        }
+    }
+    if(isDraw == 1) {
+        return 1;
+    }
+}
+
+const winnerMessage = document.getElementById("winnerMessage");
 function checkWin() {
     let result = isWin();
-    console.log(result)
+    let winnerPlayer;
     if (result == 1) {
-        console.log("PLAYER 1 WON");
+        winnerPlayer = player1;
         toggleWin = 1;
     }
     else if (result == -1) {
-        console.log("PLAYER 2 WON");
+        winnerPlayer = player2;
         toggleWin = 1;
+    }
+
+    if(toggleWin == 1) {
+        winnerMessage.innerText = `${winnerPlayer.sign} WINS`;
+    }
+    if(toggleWin == 0) {
+        if(checkDraw()) {
+            winnerMessage.innerText = `IT'S A DRAW`;
+            toggleWin = 1;
+        }
     }
 }
 
@@ -77,6 +100,7 @@ function resetGame() {
         player1.moves = [0, 0, 0, 0, 0, 0, 0, 0, 0];
         player2.moves = [0, 0, 0, 0, 0, 0, 0, 0, 0];
         currentPlayer = 1;
+        winnerMessage.innerHTML = `&nbsp`;
     })
 }
 resetButton.addEventListener("click", () => {
@@ -89,6 +113,7 @@ resetButton.addEventListener("click", () => {
 function pvp() {
     toggleWin = 0;
     toggleGame = 1;
+    pvpButton.classList.add("clickedButton");
     cells.forEach(cell => {
     cell.addEventListener("click", () => {
         if(toggleWin == 0 && player1.moves[cell.id] == 0 && player2.moves[cell.id] == 0) {
@@ -104,12 +129,12 @@ function pvp() {
 toggleGame = 0;
 const pvpButton = document.getElementById("pvp");
 pvpButton.addEventListener("click", () => {
-    pvpButton.classList.add("clickedButton");
-    
     if(toggleGame == 0) {
         pvp();
     }
 })
+
+
 
 pvp();
 
