@@ -101,7 +101,6 @@ function resetGame() {
     })
     player1.moves = [0, 0, 0, 0, 0, 0, 0, 0, 0];
     player2.moves = [0, 0, 0, 0, 0, 0, 0, 0, 0];
-    currentPlayer = 1;
     winnerMessage.innerHTML = `&nbsp`;
 }
 resetButton.addEventListener("click", () => {
@@ -115,6 +114,7 @@ resetButton.addEventListener("click", () => {
 function pvp() {
     toggleWin = 0;
     toggleGame = 1;
+    currentPlayer = 1;
     signChoice.classList.add("hide");
     pvpButton.classList.add("clickedButton");
     pvaiButton.classList.remove("clickedButton");
@@ -147,6 +147,8 @@ signChoice.addEventListener("change", () => {
         AISignChoice = "X";
         currentPlayer = -1;
     }
+    resetGame();
+    pvai();
 })
 
 
@@ -180,14 +182,20 @@ function pvai() {
     pvaiButton.classList.add("clickedButton");
     pvpButton.classList.remove("clickedButton");
     resetGame();
+    if(playerSignChoice == 'O') currentPlayer = -1;
+    if(currentPlayer == -1) {
+        console.log("A")
+        fillAI();
+    }
     cells.forEach(cell => {
         cell.addEventListener("click", () => {
             if(toggleWin == 0 && player1.moves[cell.id] == 0 && player2.moves[cell.id] == 0 && toggleGame == 3) {
                 fillCell(cell);
                 updatePlayer(cell);
-                checkWin();
+                checkWin(); 
                 if(toggleWin == 0) {
                 fillAI();
+                checkWin();
                 currentPlayer = -currentPlayer;
                 }
             }
