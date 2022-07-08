@@ -19,8 +19,13 @@ let player1 = player('X');
 let player2 = player('O');
 
 function fillCell(cell) {
+    if(toggleGame == 3 && playerSignChoice == 'O') {
+        sign = player2.sign;
+    }
+    else{
     if(currentPlayer == 1) sign = player1.sign;
     else sign = player2.sign;
+    }
     cell.classList.add(`player${sign}`);
     cell.innerHTML = `<p style='font-size: 70px; margin: 0; padding: 0;'>${sign}</p>`;
 }
@@ -60,11 +65,21 @@ function checkWin() {
     let result = isWin();
     let winnerPlayer;
     if (result == 1) {
-        winnerPlayer = player1;
+        if(toggleGame == 3 && playerSignChoice == 'O') {
+            winnerPlayer = player2;
+        }
+        else{
+            winnerPlayer = player1;
+        }
         toggleWin = 1;
     }
     else if (result == -1) {
-        winnerPlayer = player2;
+        if(toggleGame == 3 && playerSignChoice == 'O') {
+            winnerPlayer = player1;
+        }
+        else{
+            winnerPlayer = player2;
+        }
         toggleWin = 1;
     }
 
@@ -184,7 +199,6 @@ function pvai() {
     resetGame();
     if(playerSignChoice == 'O') currentPlayer = -1;
     if(currentPlayer == -1) {
-        console.log("A")
         fillAI();
     }
     cells.forEach(cell => {
@@ -195,8 +209,10 @@ function pvai() {
                 checkWin(); 
                 if(toggleWin == 0) {
                 fillAI();
-                checkWin();
-                currentPlayer = -currentPlayer;
+                if(toggleWin == 0) {
+                    checkWin();
+                    currentPlayer = -currentPlayer;
+                }
                 }
             }
         })
